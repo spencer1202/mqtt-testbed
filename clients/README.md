@@ -1,0 +1,1 @@
+This directory holds the Docker container recipes and other necessary files to construct MQTT clients which can publish messages to, and subscribe to messages from, the server in the `../server` directory.
