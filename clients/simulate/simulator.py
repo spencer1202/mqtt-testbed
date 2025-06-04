@@ -19,15 +19,19 @@ class Simulator:
         )
         self.settings_file = settings_file
         
-        # Set up log directory - default to user's Downloads/mqtt-logs folder
+        # Set up log directory - default to /logs for Docker, ~/Downloads/mqtt-logs for local
         if output_dir is None:
-            # Find the user's Downloads folder
-            home_dir = os.path.expanduser("~")
-            downloads_dir = os.path.join(home_dir, "Downloads")
-            self.output_dir = os.path.join(downloads_dir, "mqtt-logs")
+            # Check if we're in a Docker container (check for /.dockerenv)
+            if os.path.exists('/.dockerenv'):
+                self.output_dir = "/logs"
+            else:
+                # Running locally - use Downloads folder
+                home_dir = os.path.expanduser("~")
+                downloads_dir = os.path.join(home_dir, "Downloads")
+                self.output_dir = os.path.join(downloads_dir, "mqtt-logs")
         else:
             self.output_dir = output_dir
-            
+        
         # Create the output directory if it doesn't exist
         os.makedirs(self.output_dir, exist_ok=True)
         
