@@ -1,12 +1,13 @@
-import time
-import json
 import threading
+import json
+import time
+import uuid
 import paho.mqtt.client as mqtt
 from data_classes import BrokerSettings, ClientSettings
 from topic_data import TopicDataNumber, TopicDataBool, TopicDataRawValue, TopicDataMathExpression
 
 class Topic(threading.Thread):
-    def __init__(self, broker_settings: BrokerSettings, topic_url: str, topic_data: list[object], topic_payload_root: object, client_settings: ClientSettings):
+    def __init__(self, broker_settings: BrokerSettings, topic_url: str, topic_data: list[object], topic_payload_root: object, client_settings: ClientSettings, metadata_config: dict = None):
         threading.Thread.__init__(self)
 
         self.broker_settings = broker_settings
@@ -20,6 +21,13 @@ class Topic(threading.Thread):
         self.loop = False
         self.client = None
         self.payload = None
+
+        # Message metadata configuration
+        self.metadata_config = metadata_config or {
+            'include_message_id': True,
+            'include_timestamp': True,
+            'metadata_field_prefix': '_'
+        }
 
     def load_topic_data(self, topic_data_object):
         topic_data = []
@@ -53,8 +61,24 @@ class Topic(threading.Thread):
     def run(self):
         self.connect()
         while self.loop:
-            self.payload = self.generate_payload()
-            self.client.publish(topic=self.topic_url, payload=json.dumps(self.payload), qos=self.client_settings.qos, retain=self.client_settings.retain)
+            # Generate payload
+            payload = self.generate_payload()
+            
+            # Add message metadata
+            prefix = self.metadata_config.get('metadata_field_prefix', '_')
+            
+            if self.metadata_config.get('include_message_id', True):
+                payload[f"{prefix}message_id"] = str(uuid.uuid4())
+            
+            if self.metadata_config.get('include_timestamp', True):
+                # Add timestamp in milliseconds
+                payload[f"{prefix}timestamp"] = int(time.time() * 1000)
+            
+            # Convert to JSON and publish
+            payload_json = json.dumps(payload)
+            self.client.publish(self.topic_url, payload_json, qos=self.client_settings.qos, retain=self.client_settings.retain)
+            
+            # Sleep until next interval
             time.sleep(self.client_settings.time_interval)
 
     def on_publish(self, client, userdata, result):

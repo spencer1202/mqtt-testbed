@@ -1,6 +1,11 @@
 {
     "BROKER_URL": "mqtt.eclipseprojects.io",
     "BROKER_PORT": 1883,
+    
+    "INCLUDE_MESSAGE_ID": true,
+    "INCLUDE_TIMESTAMP": true,
+    "METADATA_FIELD_PREFIX": "_",
+    
     "TOPICS": [
         {
             "TYPE": "multiple",
@@ -175,7 +180,7 @@
         },
         {
             "TOPIC": "freezer",
-            "NUMBER": 1,
+            "NUMBER": 2,
             "DESCRIPTION": "Freezer temperature monitor",
             "USERS": [
                 "user1",

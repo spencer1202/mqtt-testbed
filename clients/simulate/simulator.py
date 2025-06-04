@@ -1,6 +1,8 @@
 import json
 import time
 import os
+import uuid
+import datetime
 from pathlib import Path
 import paho.mqtt.client as mqtt
 from topic import Topic
@@ -50,6 +52,11 @@ class Simulator:
             )
             broker_client_settings = self.read_client_settings(config, default=self.default_client_settings)
             
+            # Extract common message metadata configuration
+            self.include_message_id = config.get('INCLUDE_MESSAGE_ID', True)
+            self.include_timestamp = config.get('INCLUDE_TIMESTAMP', True)
+            self.metadata_field_prefix = config.get('METADATA_FIELD_PREFIX', '_')
+            
             # Load publisher topics
             if 'TOPICS' in config:
                 self.topics = self.load_topics(config['TOPICS'], broker_client_settings)
@@ -71,21 +78,50 @@ class Simulator:
         for topic in topics_config:
             topic_data = topic['DATA']
             topic_payload_root = topic.get('PAYLOAD_ROOT', {})
+            
+            # Add message metadata configuration to payload root
+            metadata_config = {
+                'include_message_id': self.include_message_id,
+                'include_timestamp': self.include_timestamp,
+                'metadata_field_prefix': self.metadata_field_prefix
+            }
+            
             topic_client_settings = self.read_client_settings(topic, default=broker_client_settings)
             if topic['TYPE'] == 'single':
                 # create single topic with format: /{PREFIX}
                 topic_url = topic['PREFIX']
-                topics.append(Topic(self.broker_settings, topic_url, topic_data, topic_payload_root, topic_client_settings))
+                topics.append(Topic(
+                    self.broker_settings, 
+                    topic_url, 
+                    topic_data, 
+                    topic_payload_root, 
+                    topic_client_settings,
+                    metadata_config
+                ))
             elif topic['TYPE'] == 'multiple':
                 # create multiple topics with format: /{PREFIX}/{id}
                 for id in range(topic['RANGE_START'], topic['RANGE_END']+1):
                     topic_url = topic['PREFIX'] + '/' + str(id)
-                    topics.append(Topic(self.broker_settings, topic_url, topic_data, topic_payload_root, topic_client_settings))
+                    topics.append(Topic(
+                        self.broker_settings, 
+                        topic_url, 
+                        topic_data, 
+                        topic_payload_root, 
+                        topic_client_settings,
+                        metadata_config
+                    ))
             elif topic['TYPE'] == 'list':
                 # create multiple topics with format: /{PREFIX}/{item}
                 for item in topic['LIST']:
                     topic_url = topic['PREFIX'] + '/' + str(item)
-                    topics.append(Topic(self.broker_settings, topic_url, topic_data, topic_payload_root, topic_client_settings))
+                    topics.append(Topic(
+                        self.broker_settings, 
+                        topic_url, 
+                        topic_data, 
+                        topic_payload_root, 
+                        topic_client_settings,
+                        metadata_config
+                    ))
         return topics
 
     def load_subscribers(self, subscribers_config):
@@ -94,8 +130,8 @@ class Simulator:
             topic_pattern = sub_config['TOPIC']
             num_subscribers = sub_config.get('NUMBER', 1)
             description = sub_config.get('DESCRIPTION', '')
-            users = sub_config.get('USERS', [])
-            password = sub_config.get('PASSWORDS', [])
+            users = sub_config.get('USERS')
+            passwords = sub_config.get('PASSWORDS')
             
             # Create a safe topic name for file naming by replacing invalid characters
             safe_topic = topic_pattern.replace('#', 'wildcard').replace('+', 'plus').replace('/', '-')
@@ -112,7 +148,7 @@ class Simulator:
                     log_file=log_file,
                     description=description,
                     user=users[i],
-                    password=password[i]
+                    password=passwords[i]
                 )
                 subscribers.append(subscriber)
         
@@ -122,6 +158,44 @@ class Simulator:
         """Callback for when a subscriber receives a message"""
         client_id = client._client_id.decode('utf-8')
         print(f"[{timestamp}] Client {client_id} received message on topic '{topic}': {len(payload)} bytes")
+        
+        # Calculate latency if the message contains a timestamp
+        try:
+            payload_json = json.loads(payload)
+            
+            # Look for timestamp field (with or without prefix)
+            prefixes = ['_', '']  # Try with prefix first, then without
+            for prefix in prefixes:
+                ts_field = f"{prefix}timestamp"
+                if ts_field in payload_json:
+                    send_time = payload_json[ts_field]
+                    
+                    # Parse the timestamp and calculate latency
+                    current_time = datetime.datetime.now().timestamp() * 1000
+                    latency_ms = current_time - send_time
+                    
+                    # Add latency information to the message
+                    payload_json[f"{prefix}latency_ms"] = round(latency_ms, 2)
+                    
+                    # Log the latency information
+                    message_id = payload_json.get(f'{prefix}message_id', 'N/A')
+                    latency_info = f"Message latency: {latency_ms:.2f}ms, Message ID: {message_id}"
+                    print(latency_info)
+                    
+                    # Add a log entry to the subscriber's log file
+                    try:
+                        log_file = os.path.join(self.output_dir, f"{client_id}.latency.log")
+                        with open(log_file, "a", encoding="utf-8") as f:
+                            # Format: timestamp, topic, message_id, send_time, receive_time, latency_ms
+                            log_entry = f"{timestamp},{topic},{message_id},{send_time},{current_time},{latency_ms:.2f}\n"
+                            f.write(log_entry)
+                    except Exception as e:
+                        print(f"Error writing to latency log: {str(e)}")
+                    
+                    break
+        except Exception as e:
+            # Failed to parse JSON or calculate latency
+            print(f"Error calculating latency: {str(e)}")
 
     def run(self):
         print(f"Logs will be written to: {self.output_dir}")
