@@ -130,5 +130,32 @@
                 }
             ]
         }
+    ],
+    "SUBSCRIBERS": [
+        {
+            "TOPIC": "lamp/#",
+            "NUMBER": 2,
+            "DESCRIPTION": "Subscribes to all lamp topics"
+        },
+        {
+            "TOPIC": "air_quality",
+            "NUMBER": 3,
+            "DESCRIPTION": "Air quality monitors"
+        },
+        {
+            "TOPIC": "temperature/#",
+            "NUMBER": 2,
+            "DESCRIPTION": "Temperature sensors in different locations"
+        },
+        {
+            "TOPIC": "freezer",
+            "NUMBER": 1,
+            "DESCRIPTION": "Freezer temperature monitor"
+        },
+        {
+            "TOPIC": "location",
+            "NUMBER": 3,
+            "DESCRIPTION": "Location tracking subscribers"
+        }
     ]
 }

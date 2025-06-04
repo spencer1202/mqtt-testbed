@@ -13,8 +13,13 @@ def is_valid_file(parser, arg):
         return parser.error(f"argument -f/--file: can't open '{arg}'")
     return settings_file
 
-parser = argparse.ArgumentParser()
-parser.add_argument('-f', '--file', dest='settings_file', type=lambda x: is_valid_file(parser, x), help='settings file', default=default_settings())
+parser = argparse.ArgumentParser(description='MQTT Simulator for publishing and subscribing')
+parser.add_argument('-f', '--file', dest='settings_file', type=lambda x: is_valid_file(parser, x), 
+                    help='settings file', default=default_settings())
+parser.add_argument('-m', '--mode', choices=['pub', 'sub', 'both'], default='both',
+                    help='Run mode: publisher only, subscriber only, or both (default)')
+parser.add_argument('-o', '--output', type=str, default='./data',
+                    help='Directory to store collected subscription data')
 args = parser.parse_args()
 
 simulator = Simulator(args.settings_file)
