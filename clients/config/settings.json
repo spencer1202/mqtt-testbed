@@ -135,27 +135,71 @@
         {
             "TOPIC": "lamp/#",
             "NUMBER": 2,
-            "DESCRIPTION": "Subscribes to all lamp topics"
+            "DESCRIPTION": "Subscribes to all lamp topics",
+            "USERS": [
+                "user1",
+                "user2"
+            ],
+            "PASSWORDS":[
+                "password1",
+                "password2"
+            ]
         },
         {
             "TOPIC": "air_quality",
             "NUMBER": 3,
-            "DESCRIPTION": "Air quality monitors"
+            "DESCRIPTION": "Air quality monitors",
+            "USERS": [
+                "user1",
+                "user2",
+                "user3"
+            ],
+            "PASSWORDS":[
+                "password1",
+                "password2",
+                "password3"
+            ]
         },
         {
             "TOPIC": "temperature/#",
             "NUMBER": 2,
-            "DESCRIPTION": "Temperature sensors in different locations"
+            "DESCRIPTION": "Temperature sensors in different locations",
+            "USERS": [
+                "user1",
+                "user2"
+            ],
+            "PASSWORDS":[
+                "password1",
+                "password2"
+            ]
         },
         {
             "TOPIC": "freezer",
             "NUMBER": 1,
-            "DESCRIPTION": "Freezer temperature monitor"
+            "DESCRIPTION": "Freezer temperature monitor",
+            "USERS": [
+                "user1",
+                "user2"
+            ],
+            "PASSWORDS":[
+                "password1",
+                "password2"
+            ]
         },
         {
             "TOPIC": "location",
             "NUMBER": 3,
-            "DESCRIPTION": "Location tracking subscribers"
+            "DESCRIPTION": "Location tracking subscribers",
+            "USERS": [
+                "user1",
+                "user2",
+                "user3"
+            ],
+            "PASSWORDS":[
+                "password1",
+                "password2",
+                "password3"
+            ]
         }
     ]
 }

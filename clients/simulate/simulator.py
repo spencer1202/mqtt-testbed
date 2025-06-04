@@ -94,6 +94,8 @@ class Simulator:
             topic_pattern = sub_config['TOPIC']
             num_subscribers = sub_config.get('NUMBER', 1)
             description = sub_config.get('DESCRIPTION', '')
+            users = sub_config.get('USERS', [])
+            password = sub_config.get('PASSWORDS', [])
             
             # Create a safe topic name for file naming by replacing invalid characters
             safe_topic = topic_pattern.replace('#', 'wildcard').replace('+', 'plus').replace('/', '-')
@@ -108,7 +110,9 @@ class Simulator:
                     topic=topic_pattern,
                     data_callback=self.on_message_received,
                     log_file=log_file,
-                    description=description
+                    description=description,
+                    user=users[i],
+                    password=password[i]
                 )
                 subscribers.append(subscriber)
         

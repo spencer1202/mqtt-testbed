@@ -6,13 +6,15 @@ from topic import Topic
 from data_classes import BrokerSettings, ClientSettings
 
 class SubscriberClient:
-    def __init__(self, broker_settings, client_id, topic, data_callback, log_file=None, description=""):
+    def __init__(self, broker_settings, client_id, topic, data_callback, log_file=None, description="", user="", password=""):
         self.broker_settings = broker_settings
         self.client_id = client_id
         self.topic = topic
         self.data_callback = data_callback
         self.description = description
         self.client = None
+        self.user = user
+        self.password = password
         
         # Set up logging
         self.log_file = log_file or f"{client_id}.log"
@@ -78,7 +80,7 @@ class SubscriberClient:
         
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
         self._write_to_log(f"[{timestamp}] Attempting connection to {self.broker_settings.url}:{self.broker_settings.port}")
-        
+        self.client.username_pw_set(self.user, self.password)
         self.client.connect(self.broker_settings.url, self.broker_settings.port, 60)
         self.client.loop_start()
 
