@@ -24,9 +24,6 @@ class SubscriberClient:
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
         self.data_callback(client, msg.topic, msg.payload, timestamp)
         
-        # In a real implementation, we would log the data to a collection file
-        # with open(f"data_collection_{self.client_id}.txt", "a") as f:
-        #    f.write(f"{timestamp} {msg.topic} {len(msg.payload)}\n")
 
     def connect(self):
         clean_session = None if self.broker_settings.protocol == mqtt.MQTTv5 else True

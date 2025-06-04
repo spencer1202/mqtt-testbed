@@ -20,6 +20,7 @@ class Simulator:
         self.topics = []
         self.subscribers = []
         self.load_configuration()
+        self.log_file = "subscriber_log.txt"  # Log file for subscriber messages
 
     def load_configuration(self):
         with open(self.settings_file) as json_file:
@@ -91,6 +92,26 @@ class Simulator:
         client_id = client._client_id.decode('utf-8')
         print(f"[{timestamp}] Client {client_id} received message on topic '{topic}': {len(payload)} bytes")
         # In a real implementation, this would save data to collection files
+        # Log the received message
+        try:
+            # Try to decode as JSON for better logging
+            payload_str = msg.payload.decode('utf-8')
+            try:
+                payload_json = json.loads(payload_str)
+                payload_formatted = json.dumps(payload_json, indent=2)
+            except json.JSONDecodeError:
+                payload_formatted = payload_str if len(payload_str) < 100 else f"{payload_str[:97]}..."
+        except UnicodeDecodeError:
+            # If not text, just log the size
+            payload_formatted = f"<binary data: {len(msg.payload)} bytes>"
+            
+        log_entry = f"[{timestamp}] {client_id} Received message on topic '{msg.topic}':\n{payload_formatted}\n{'-'*40}"
+        self._write_to_log(log_entry)
+
+    def _write_to_log(self, message):
+        """Write a message to this subscriber's log file"""
+        with open(self.log_file, "a", encoding="utf-8") as f:
+            f.write(f"{message}\n")
 
     def run(self):
         # Start all subscribers
