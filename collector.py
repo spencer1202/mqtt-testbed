@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+# collector script, Steve Willoughby, June 2025
+#
+# This is just a start, a lot more to be added here.
+# Collect stats on publishers and subscribers to track what messages were sent and received, what data was sent (and not sent),
+# (later) what data was transformed or mis-delivered, altered by policy rules, etc.
+# and the throughput time stats for messages going through the system based on timestamps for pub/sub time per message.
+
 from datetime import datetime
 import argparse
 import os, os.path
