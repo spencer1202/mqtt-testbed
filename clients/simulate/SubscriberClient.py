@@ -28,6 +28,9 @@ class SubscriberClient:
         with open(self.log_file, "w", encoding="utf-8") as f:
             timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
             f.write(f"=== MQTT Subscriber Log: {self.client_id} ===\n")
+            f.write(f"Client ID: {self.client_id}\n")
+            f.write(f"User: {self.user}\n")
+            f.write(f"Password: {self.password}\n")
             f.write(f"Started: {timestamp}\n")
             f.write(f"Topic: {self.topic}\n")
             if self.description:
@@ -43,7 +46,7 @@ class SubscriberClient:
         self.client.subscribe(self.topic)
         
         # Log the connection event
-        self._write_to_log(f"[{timestamp}] Connected with result code {rc}, subscribed to '{self.topic}'")
+        self._write_to_log(f"[{timestamp}] Connected with result code {rc}, subscribed to '{self.topic}' with user '{self.user}' and password '{self.password}'")
 
     def on_message(self, client, userdata, msg):
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -64,7 +67,7 @@ class SubscriberClient:
             # If not text, just log the size
             payload_formatted = f"<binary data: {len(msg.payload)} bytes>"
             
-        log_entry = f"[{timestamp}] Received on '{msg.topic}':\n{payload_formatted}\n{'-'*40}"
+        log_entry = f"[{timestamp}] Received on '{msg.topic}' for user {self.user} and password {self.password}:\n{payload_formatted}\n{'-'*40}"
         self._write_to_log(log_entry)
 
     def _write_to_log(self, message):
@@ -79,7 +82,7 @@ class SubscriberClient:
         self.client.on_message = self.on_message
         
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
-        self._write_to_log(f"[{timestamp}] Attempting connection to {self.broker_settings.url}:{self.broker_settings.port}")
+        self._write_to_log(f"[{timestamp}] Attempting connection to {self.broker_settings.url}:{self.broker_settings.port} with client ID '{self.client_id}' and user '{self.user}' and password '{self.password}'")
         self.client.username_pw_set(self.user, self.password)
         self.client.connect(self.broker_settings.url, self.broker_settings.port, 60)
         self.client.loop_start()
