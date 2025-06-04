@@ -40,7 +40,7 @@ class SubscriberClient:
 
     def on_connect(self, client, userdata, flags, rc):
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
-        print(f"Subscriber {self.client_id} connected with result code {rc}")
+        print(f"[{timestamp}] Connected with result code {rc}, subscribed to '{self.topic}' with user '{self.user}' and password '{self.password}'")
         
         # Subscribe to the topic upon successful connection
         self.client.subscribe(self.topic)
