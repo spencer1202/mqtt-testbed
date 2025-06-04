@@ -1,5 +1,7 @@
 import json
 import time
+import os
+from pathlib import Path
 import paho.mqtt.client as mqtt
 from topic import Topic
 from data_classes import BrokerSettings, ClientSettings
@@ -8,7 +10,7 @@ from data_classes.client_settings import ClientSettings
 from SubscriberClient import SubscriberClient
 
 class Simulator:
-    def __init__(self, settings_file):
+    def __init__(self, settings_file, output_dir=None):
         self.default_client_settings = ClientSettings(
             clean=True,
             retain=False,
@@ -16,11 +18,23 @@ class Simulator:
             time_interval=10
         )
         self.settings_file = settings_file
+        
+        # Set up log directory - default to user's Downloads/mqtt-logs folder
+        if output_dir is None:
+            # Find the user's Downloads folder
+            home_dir = os.path.expanduser("~")
+            downloads_dir = os.path.join(home_dir, "Downloads")
+            self.output_dir = os.path.join(downloads_dir, "mqtt-logs")
+        else:
+            self.output_dir = output_dir
+            
+        # Create the output directory if it doesn't exist
+        os.makedirs(self.output_dir, exist_ok=True)
+        
         self.broker_settings = None
         self.topics = []
         self.subscribers = []
         self.load_configuration()
-        self.log_file = "subscriber_log.txt"  # Log file for subscriber messages
 
     def load_configuration(self):
         with open(self.settings_file) as json_file:
@@ -75,13 +89,22 @@ class Simulator:
         for sub_config in subscribers_config:
             topic_pattern = sub_config['TOPIC']
             num_subscribers = sub_config.get('NUMBER', 1)
+            description = sub_config.get('DESCRIPTION', '')
+            
+            # Create a safe topic name for file naming by replacing invalid characters
+            safe_topic = topic_pattern.replace('#', 'wildcard').replace('+', 'plus').replace('/', '-')
             
             for i in range(num_subscribers):
+                client_id = f"subscriber-{safe_topic}-{i}"
+                log_file = os.path.join(self.output_dir, f"{client_id}.log")
+                
                 subscriber = SubscriberClient(
                     broker_settings=self.broker_settings,
-                    client_id=f"subscriber-{topic_pattern}-{i}",
+                    client_id=client_id,
                     topic=topic_pattern,
-                    data_callback=self.on_message_received
+                    data_callback=self.on_message_received,
+                    log_file=log_file,
+                    description=description
                 )
                 subscribers.append(subscriber)
         
@@ -91,29 +114,10 @@ class Simulator:
         """Callback for when a subscriber receives a message"""
         client_id = client._client_id.decode('utf-8')
         print(f"[{timestamp}] Client {client_id} received message on topic '{topic}': {len(payload)} bytes")
-        # In a real implementation, this would save data to collection files
-        # Log the received message
-        try:
-            # Try to decode as JSON for better logging
-            payload_str = msg.payload.decode('utf-8')
-            try:
-                payload_json = json.loads(payload_str)
-                payload_formatted = json.dumps(payload_json, indent=2)
-            except json.JSONDecodeError:
-                payload_formatted = payload_str if len(payload_str) < 100 else f"{payload_str[:97]}..."
-        except UnicodeDecodeError:
-            # If not text, just log the size
-            payload_formatted = f"<binary data: {len(msg.payload)} bytes>"
-            
-        log_entry = f"[{timestamp}] {client_id} Received message on topic '{msg.topic}':\n{payload_formatted}\n{'-'*40}"
-        self._write_to_log(log_entry)
-
-    def _write_to_log(self, message):
-        """Write a message to this subscriber's log file"""
-        with open(self.log_file, "a", encoding="utf-8") as f:
-            f.write(f"{message}\n")
 
     def run(self):
+        print(f"Logs will be written to: {self.output_dir}")
+        
         # Start all subscribers
         for subscriber in self.subscribers:
             print(f'Starting subscriber: {subscriber.client_id} for topic {subscriber.topic} ...')
