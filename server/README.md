@@ -1,4 +1,8 @@
 This is our Proof-of-concept Policy Enforcement Agent which is added to a stock Mochi MQTT server.
+(There's a lot more work in progress going on to build out the functioning PEA unit, but for the purposes of
+this demonstration project, this first step proof-of-concept was ready to show at the moment which shows
+the impact of inserting an agent of any sort into the broker, so we're starting with that and then bringing
+the other pieces online incrementally.)
 
 To use this, clone a copy of [mochi-mqtt server](https://github.com/mochi-mqtt/server) in its own directory. Then set uup your own server based on it and add the `policy` hook defined here to it.  The simplest way to do that is to add it to the basic MQTT
 server that comes with Mochi itself:
