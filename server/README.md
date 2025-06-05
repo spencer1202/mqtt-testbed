@@ -4,10 +4,10 @@ this demonstration project, this first step proof-of-concept was ready to show a
 the impact of inserting an agent of any sort into the broker, so we're starting with that and then bringing
 the other pieces online incrementally.)
 
-To use this, clone a copy of [mochi-mqtt server](https://github.com/mochi-mqtt/server) in its own directory. Then set uup your own server based on it and add the `policy` hook defined here to it.  The simplest way to do that is to add it to the basic MQTT
+To use this, clone a copy of [mochi-mqtt server](https://github.com/mochi-mqtt/server) in its own directory. Then set up your own server based on it and add the `policy` hook defined here to it.  The simplest way to do that is to add it to the basic MQTT
 server that comes with Mochi itself:
 
-In mochi, go into the `cmd` directory and edit `main.go`.
+In Mochi, go into the `cmd` directory and edit `main.go`.
 
 Add a line to import this module:
 
