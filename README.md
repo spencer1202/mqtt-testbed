@@ -10,3 +10,10 @@ demonstrations and experiments.
 
 This repository is an experimental testbed where we have some forked code from open-source MQTT broker and client
 systems we've experimented with, and our orchestration and analysis scripts, and reports we've written up about it all.
+
+# Credits
+The MQTT broker access controls were developed by Steve Willoughby as an add on to the Mochi mqtt server (not included here, but get a copy and add our code here as a hook to that code to use it)
+
+The MQTT simulator which runs our experiments was forked from [DamascenoRafael/mqtt-simulator](https://github.com/DamascenoRafael/mqtt-simulator/tree/master) and modified by Jacob Olinger for this project.
+
+The latency analyzer script was written by Jacob Olinger.
