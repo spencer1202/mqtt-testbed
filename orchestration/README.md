@@ -1,3 +1,11 @@
+## Deprecated
+This directory was originally for an orchestration script that has now been superceded by the simulator.
+
+-----
+
+### Original Design Notes Below
+
+
 This directory holds the configuration files and orchestration scripts which execute experimental runs.
 
 ## General Design
