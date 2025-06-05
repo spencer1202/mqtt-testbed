@@ -31,4 +31,4 @@ That's it. Now either compile the binary or just run it directly:
 
 and start running clients to through it as documented for the simulator in its directory in this repo.
 
-The API documentation for our PEA hook module may be found at [pkg.go.dev](http://pkg.go.dev/github.com/MadScienceZone/mqtt-testbed/server/).
+The API documentation for our PEA hook module may be found at [pkg.go.dev](http://pkg.go.dev/github.com/MadScienceZone/mqtt-testbed/server/policy).
