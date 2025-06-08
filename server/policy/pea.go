@@ -1,6 +1,6 @@
 // Policy Enforcement Agent
 //
-// Proof-of-concept prototype
+// # Proof-of-concept prototype
 //
 // This is the first baby-step toward inserting a Policy Enforcement Agent (PEA) into a Mochi MQTT agent.
 // We're proving here that we can insert a policy management agent using the broker event hooks, use those
@@ -26,27 +26,21 @@ import (
 	"github.com/mochi-mqtt/server/v2/packets"
 )
 
-//
 // PEAHook defines our Policy Enforcement Agent type as a hook into the Mochi MQTT broker
 // to intercept telemetry traffic events at any points in the processing we choose.
-//
 type PEAHook struct {
 	mqtt.HookBase
 }
 
-//
 // ID identifies our hook to other interested subsystems.
-//
 func (h PEAHook) ID() string {
 	return "PEA"
 }
 
-//
 // Provides informs the broker which event handlers our hook provides.
 // In other words, we will be intercepting packets at these points in their
 // path through the broker, and these methods will be invoked via our
 // hooks accordingly by the broker.
-//
 func (h PEAHook) Provides(b byte) bool {
 	return bytes.Contains([]byte{
 		mqtt.OnConnectAuthenticate,
@@ -57,10 +51,8 @@ func (h PEAHook) Provides(b byte) bool {
 	}, []byte{b})
 }
 
-//
 // showPacket is an internal debugging function used while developing
 // the code to examine attributes of the packets.
-//
 func showPacket(pk packets.Packet) {
 	fmt.Printf("Connect\n")
 	fmt.Printf(" Username %s Password %s ID %s pwd %v usr %v\n",
@@ -75,11 +67,9 @@ func showPacket(pk packets.Packet) {
 	)
 }
 
-//
 // showClient is an internal debugging function used while developing
 // the code to examing attributes of the clients involved in communication
 // with the broker.
-//
 func showClient(cl *mqtt.Client) {
 	if cl == nil {
 		fmt.Println("no client")
@@ -89,7 +79,6 @@ func showClient(cl *mqtt.Client) {
 	}
 }
 
-//
 // OnConnectAuthenticate is an event handler hook method which intercepts
 // an incoming MQTT client (publisher or subscriber) who wishes to join the
 // broker. We can decide to allow or deny the connection here by returning
@@ -102,7 +91,6 @@ func showClient(cl *mqtt.Client) {
 // In a production system, obviously this will be replaced with an actual
 // authentication system which checks the subject and object attibutes
 // presented against what is allowed by policy.
-//
 func (h PEAHook) OnConnectAuthenticate(cl *mqtt.Client, pk packets.Packet) bool {
 	fmt.Println("AUTHENTICATE")
 	showClient(cl)
@@ -122,14 +110,12 @@ func (h PEAHook) OnConnectAuthenticate(cl *mqtt.Client, pk packets.Packet) bool 
 	return false
 }
 
-//
 // OnSubscribe is an event handler hook method which intercepts an incoming MQTT client
 // subscriber wishing to subscribe to an MQTT topic pattern. We have the opportunity
 // here to alter their request packet before returning it back to the broker.
 // In this PoC test we won't, because we're demonstrating publish-time policy enforcement
 // but for subscribe-time enforcement we could impose a number of subscription rewrite
 // transformations.
-//
 func (h PEAHook) OnSubscribe(cl *mqtt.Client, pk packets.Packet) packets.Packet {
 	fmt.Println("SUBSCRIBE")
 	showClient(cl)
@@ -137,20 +123,17 @@ func (h PEAHook) OnSubscribe(cl *mqtt.Client, pk packets.Packet) packets.Packet 
 	return pk
 }
 
-//
 // OnSubscribed is an event handler hook method which intercepts an incoming MQTT client
 // subscriber packet after the subscription has happened, in case we want to take action
 // in response to it afterward.
 // We don't right now, but in the final production system where we make extensions to the
 // topic tree ourselves, this may be needed.
-//
 func (h PEAHook) OnSubscribed(cl *mqtt.Client, pk packets.Packet, reasonCodes []byte) {
 	fmt.Println("SUBSCRIBED", reasonCodes)
 	showClient(cl)
 	showPacket(pk)
 }
 
-//
 // OnPacketEncode is an event handler hook method which intercepts an outgoing MQTT published
 // message packet just before it is encoded into its final binary form before being shipped
 // out to all the subscribed clients.
@@ -160,7 +143,6 @@ func (h PEAHook) OnSubscribed(cl *mqtt.Client, pk packets.Packet, reasonCodes []
 // redact the packet data if the "temperature" field value exceeds 30.0. So in that
 // case we will alter the packet's payload value before sending it back to the broker
 // to be encoded and shipped out to the subscribers.
-//
 func (h PEAHook) OnPacketEncode(cl *mqtt.Client, pk packets.Packet) packets.Packet {
 	if pk.TopicName == "temperature/basement" {
 		var d map[string]any
@@ -172,10 +154,20 @@ func (h PEAHook) OnPacketEncode(cl *mqtt.Client, pk packets.Packet) packets.Pack
 		if ok {
 			ftemp, ok := temp.(float64)
 			if ok && ftemp > 30.0 {
-				fmt.Printf("ENCODE temp=%v DENY\n", ftemp)
-				fmt.Printf("redacting %d bytes\n", len(pk.Payload))
-				for i := 0; i < len(pk.Payload); i++ {
-					pk.Payload[i] = 0
+				var newPayload []byte
+				var err error
+
+				fmt.Printf("ENCODE temp=%v REDACTED\n", ftemp)
+				delete(d, "temperature")
+				d["redacted_temperature"] = 0.0
+				if newPayload, err = json.Marshal(d); err != nil {
+					// we couldn't re-encode the payload, so fall back to a more drastic level
+					fmt.Printf("ERROR in JSON encoding (%v), just redacting %d bytes\n", err, len(pk.Payload))
+					for i := 0; i < len(pk.Payload); i++ {
+						pk.Payload[i] = 0
+					}
+				} else {
+					pk.Payload = newPayload
 				}
 				return pk
 			}
@@ -186,7 +178,6 @@ func (h PEAHook) OnPacketEncode(cl *mqtt.Client, pk packets.Packet) packets.Pack
 	return pk
 }
 
-//
 // OnACLCheck is an event handler hook method which intercepts incoming and
 // outgoing MQTT packets to check whether they should be allowed to be sent
 // or received. This allows for the imposition of arbitrary packet dropping
@@ -197,7 +188,6 @@ func (h PEAHook) OnPacketEncode(cl *mqtt.Client, pk packets.Packet) packets.Pack
 // returns true if this should be allowed.
 //
 // For our PoC demo we'll use this to enforce our publish-time policy rules.
-//
 func (h PEAHook) OnACLCheck(cl *mqtt.Client, topic string, write bool) bool {
 	fmt.Println("ACL OK", topic, write, string(cl.Properties.Username))
 	if !write {
@@ -219,13 +209,11 @@ func (h PEAHook) OnACLCheck(cl *mqtt.Client, topic string, write bool) bool {
 	return true
 }
 
-//
 // Hardwired test policy for proof of concept until we have a general-purpose
 // policy input method and user interface built
 //
 // first cut: without a more sophisticated full-scale policy definition, let's
 // identify user profile just by user/password.
-//
 type policyDefinition struct {
 	username string
 	password string
