@@ -1,0 +1,337 @@
+{
+    "TOPICS": [
+        {
+            "TYPE": "list",
+            "PREFIX": "inside/floor1/entryway/climate/thermostat/thermostat001",
+            "LIST": [
+                "status",
+                "set"
+            ],
+            "TIME_INTERVAL": 6,
+            "DATA": [
+                {
+                    "NAME": "temperature",
+                    "TYPE": "float",
+                    "MIN_VALUE": 60,
+                    "MAX_VALUE": 80,
+                    "MAX_STEP": 5,
+                    "RETAIN_PROBABILITY": 0.4
+                }
+            ]
+        },
+        {
+            "TYPE": "single",
+            "PREFIX": "inside/floor1/entryway/climate/humidity/hum001",
+            "TIME_INTERVAL": 2,
+            "DATA": [
+                {
+                    "NAME": "humidity",
+                    "TYPE": "float",
+                    "INITIAL_VALUE": 0.5,
+                    "MIN_VALUE": 0,
+                    "MAX_VALUE": 1,
+                    "MAX_STEP": 0.05,
+                    "RETAIN_PROBABILITY": 0.4,
+                    "RESET_PROBABILITY": 0.2
+                }
+            ]
+        },
+        {
+            "TYPE": "single",
+            "PREFIX": "inside/floor1/entryway/climate/airquality/airq001",
+            "TIME_INTERVAL": 5,
+            "DATA": [
+				{
+					"NAME": "pollution_particles",
+					"TYPE": "float",
+					"MIN_VALUE": 0,
+					"MAX_VALUE": 1,
+					"MAX_STEP": 0.15,
+					"RETAIN_PROBABILITY": 0.9
+				},
+				{
+					"NAME": "alert",
+					"TYPE": "bool",
+                    "INITIAL_VALUE": false,
+                    "RETAIN_PROBABILITY": 0.9,
+					"RESET_PROBABILITY": 0.3
+				}
+            ]
+        },
+        {
+            "TYPE": "single",
+            "PREFIX": "inside/floor1/entryway/climate/ambientlight/light001",
+            "TIME_INTERVAL": 2,
+            "DATA": [
+                {
+                    "NAME": "brightness",
+                    "TYPE": "float",
+                    "MIN_VALUE": 0,
+                    "MAX_VALUE": 500,
+                    "MAX_STEP": 50,
+                    "RETAIN_PROBABILITY": 0.2,
+                    "RESET_PROBABILITY": 0.2,
+                    "INCREASE_PROBABILITY": 0.3,
+                    "RESTART_ON_BOUNDARIES": true
+                }
+            ]
+        }, 
+        {
+            "TYPE": "single",
+            "PREFIX": "inside/floor1/entryway/motion/motion001",
+            "TIME_INTERVAL": 3,
+            "DATA": [
+                {
+                    "NAME": "alert",
+                    "TYPE": "bool",
+                    "RETAIN_PROBABILITY": 0.6
+                }
+            ]
+        },
+        {
+            "TYPE": "single",
+            "PREFIX": "inside/floor1/entryway/door/sensor/ds001",
+            "TIME_INTERVAL": 3,
+            "DATA": [
+                {
+                    "NAME": "alert",
+                    "TYPE": "bool",
+                    "INITIAL_VALUE": false,
+                    "RESET_PROBABILITY": 0.7
+                }
+            ]
+        },
+        {
+            "TYPE": "list",
+            "PREFIX": "inside/floor1/entryway/door/lock/dl001",
+            "LIST": [
+                "status",
+                "set"
+            ],
+            "TIME_INTERVAL": 6,
+            "DATA": [
+                {
+                    "NAME": "lock",
+                    "TYPE": "bool",
+                    "RETAIN_PROBABILITY": 0.9 
+                }
+            ]
+        },
+        {
+            "TYPE": "list",
+            "PREFIX": "inside/floor1/entryway/window/sensor",
+            "LIST": [
+                "ws001",
+                "ws002"
+            ],
+            "TIME_INTERVAL": 4,
+            "DATA": [
+                {
+                    "NAME": "alert",
+                    "TYPE": "bool",
+                    "INITIAL_VALUE": false,
+                    "RESET_PROBABILITY": 0.7
+                }
+            ]
+        },
+        {
+            "TYPE": "list",
+            "PREFIX": "inside/floor1/entryway/window/lock/wl001",
+            "LIST": [
+                "status",
+                "set"
+            ],
+            "TIME_INTERVAL": 10,
+            "DATA": [
+                {
+                    "NAME": "lock",
+                    "TYPE": "bool",
+                    "RETAIN_PROBABILITY": 0.9 
+                }
+            ]
+        },
+        {
+            "TYPE": "list",
+            "PREFIX": "inside/floor1/entryway/window/lock/wl002",
+            "LIST": [
+                "status",
+                "set"
+            ],
+            "TIME_INTERVAL": 10,
+            "DATA": [
+                {
+                    "NAME": "lock",
+                    "TYPE": "bool",
+                    "RETAIN_PROBABILITY": 0.9 
+                }
+            ]
+        },
+        {
+            "TYPE": "list",
+            "PREFIX": "inside/floor1/entryway/window/blinds/blinds001",
+            "LIST": [
+                "status",
+                "set"
+            ],
+            "TIME_INTERVAL": 10,
+            "DATA": [
+                {
+                    "NAME": "open",
+                    "TYPE": "bool",
+                    "RETAIN_PROBABILITY": 0.9 
+                }
+            ]
+        },
+        {
+            "TYPE": "list",
+            "PREFIX": "inside/floor1/entryway/light/ceiling/clight001",
+            "LIST": [
+                "status",
+                "set"
+            ],
+            "TIME_INTERVAL": 10,
+            "DATA": [
+                {
+                    "NAME": "on",
+                    "TYPE": "bool",
+                    "RETAIN_PROBABILITY": 0.9 
+                }
+            ]
+        },
+        {
+            "TYPE": "list",
+            "PREFIX": "inside/floor1/hallway/climate/thermostat/thermostat002",
+            "LIST": [
+                "status",
+                "set"
+            ],
+            "TIME_INTERVAL": 6,
+            "DATA": [
+                {
+                    "NAME": "temperature",
+                    "TYPE": "float",
+                    "MIN_VALUE": 60,
+                    "MAX_VALUE": 80,
+                    "MAX_STEP": 5,
+                    "RETAIN_PROBABILITY": 0.4
+                }
+            ]
+        },
+        {
+            "TYPE": "single",
+            "PREFIX": "inside/floor1/hallway/climate/humidity/hum002",
+            "TIME_INTERVAL": 2,
+            "DATA": [
+                {
+                    "NAME": "humidity",
+                    "TYPE": "float",
+                    "INITIAL_VALUE": 0.5,
+                    "MIN_VALUE": 0,
+                    "MAX_VALUE": 1,
+                    "MAX_STEP": 0.05,
+                    "RETAIN_PROBABILITY": 0.4,
+                    "RESET_PROBABILITY": 0.2
+                }
+            ]
+        },
+        {
+            "TYPE": "single",
+            "PREFIX": "inside/floor1/hallway/climate/airquality/airq002",
+            "TIME_INTERVAL": 5,
+            "DATA": [
+				{
+					"NAME": "pollution_particles",
+					"TYPE": "float",
+					"MIN_VALUE": 0,
+					"MAX_VALUE": 1,
+					"MAX_STEP": 0.15,
+					"RETAIN_PROBABILITY": 0.9
+				},
+				{
+					"NAME": "alert",
+					"TYPE": "bool",
+                    "INITIAL_VALUE": false,
+                    "RETAIN_PROBABILITY": 0.9,
+					"RESET_PROBABILITY": 0.3
+				}
+            ]
+        },
+        {
+            "TYPE": "single",
+            "PREFIX": "inside/floor1/hallway/climate/ambientlight/light002",
+            "TIME_INTERVAL": 2,
+            "DATA": [
+                {
+                    "NAME": "brightness",
+                    "TYPE": "float",
+                    "MIN_VALUE": 0,
+                    "MAX_VALUE": 500,
+                    "MAX_STEP": 50,
+                    "RETAIN_PROBABILITY": 0.2,
+                    "RESET_PROBABILITY": 0.2,
+                    "INCREASE_PROBABILITY": 0.3,
+                    "RESTART_ON_BOUNDARIES": true
+                }
+            ]
+        }, 
+        {
+            "TYPE": "single",
+            "PREFIX": "inside/floor1/hallway/motion/motion002",
+            "TIME_INTERVAL": 3,
+            "DATA": [
+                {
+                    "NAME": "alert",
+                    "TYPE": "bool",
+                    "RETAIN_PROBABILITY": 0.6
+                }
+            ]
+        },
+        {
+            "TYPE": "list",
+            "PREFIX": "inside/floor1/entryway/light/ceiling/clight002",
+            "LIST": [
+                "status",
+                "set"
+            ],
+            "TIME_INTERVAL": 10,
+            "DATA": [
+                {
+                    "NAME": "on",
+                    "TYPE": "bool",
+                    "RETAIN_PROBABILITY": 0.9 
+                }
+            ]
+        },
+        {
+            "TYPE": "list",
+            "PREFIX": "inside/floor1/entryway/light/lamp/lamp001",
+            "LIST": [
+                "status",
+                "set"
+            ],
+            "TIME_INTERVAL": 10,
+            "DATA": [
+                {
+                    "NAME": "on",
+                    "TYPE": "bool",
+                    "RETAIN_PROBABILITY": 0.9 
+                }
+            ]
+        }
+    ],
+    "SUBSCRIBERS": [
+        {
+            "TOPIC": "inside/+/+/motion/+",
+            "NUMBER": 2,
+            "DESCRIPTION": "Subscribes to all motion detectors",
+            "USERS": [
+                "user1",
+                "user2"
+            ],
+			"PASSWORDS": [
+				"password1",
+				"password2"
+			]
+        }
+    ]
+}

@@ -124,7 +124,7 @@ class SubscriberClient:
 
     def connect(self):
         clean_session = None if self.broker_settings.protocol == mqtt.MQTTv5 else True
-        self.client = mqtt.Client(client_id=self.client_id, protocol=self.broker_settings.protocol, clean_session=clean_session)
+        self.client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1, client_id=self.client_id, protocol=self.broker_settings.protocol, clean_session=clean_session)
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
         
