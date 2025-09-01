@@ -3,11 +3,12 @@ import time
 import os
 import datetime
 import paho.mqtt.client as mqtt
+import paho.mqtt.properties as properties
 from topic import Topic
 from data_classes import BrokerSettings, ClientSettings
 
 class SubscriberClient:
-    def __init__(self, broker_settings, client_id, topic, data_callback, log_file=None, description="", user="", password=""):
+    def __init__(self, broker_settings, client_id, topic, data_callback, log_file=None, description="", user="", password="", purpose = ""):
         self.broker_settings = broker_settings
         self.client_id = client_id
         self.topic = topic
@@ -16,6 +17,7 @@ class SubscriberClient:
         self.client = None
         self.user = user
         self.password = password
+        self.purpose = purpose
         
         # Set up logging
         self.log_file = log_file or f"{client_id}.log"
@@ -36,6 +38,8 @@ class SubscriberClient:
             f.write(f"Topic: {self.topic}\n")
             if self.description:
                 f.write(f"Description: {self.description}\n")
+            if self.purpose:
+                f.write(f"Purpose: {self.purpose}\n")
             f.write(f"Broker: {broker_settings.url}:{broker_settings.port}\n")
             f.write("=" * 50 + "\n\n")
 
@@ -48,8 +52,11 @@ class SubscriberClient:
         timestamp = self._get_timestamp_ms()
         print(f"[{timestamp}] Connected with result code {rc}, subscribed to '{self.topic}' with user '{self.user}' and password '{self.password}'")
         
+        sub_properties = properties.Properties(PacketTypes.SUBSCRIBE)
+        sub_properties.UserProperty = ("purpose", self.purpose)
+
         # Subscribe to the topic upon successful connection
-        self.client.subscribe(self.topic)
+        self.client.subscribe(self.topic, properties=sub_properties)
         
         # Log the connection event
         self._write_to_log(f"[{timestamp}] Connected with result code {rc}, subscribed to '{self.topic}' with user '{self.user}' and password '{self.password}'")

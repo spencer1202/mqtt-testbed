@@ -132,6 +132,7 @@ class Simulator:
             description = sub_config.get('DESCRIPTION', '')
             users = sub_config.get('USERS')
             passwords = sub_config.get('PASSWORDS')
+            purpose = sub_config.get('PURPOSE')
             
             # Create a safe topic name for file naming by replacing invalid characters
             safe_topic = topic_pattern.replace('#', 'wildcard').replace('+', 'plus').replace('/', '-')
@@ -148,7 +149,8 @@ class Simulator:
                     log_file=log_file,
                     description=description,
                     user=users[i],
-                    password=passwords[i]
+                    password=passwords[i],
+                    purpose=purpose
                 )
                 subscribers.append(subscriber)
         

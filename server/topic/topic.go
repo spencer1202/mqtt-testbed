@@ -5,9 +5,6 @@ import (
 	"strings"
 )
 
-//Input:
-//func (top topic) Parse (str string) (topic, error) {
-
 func main() {
 	topics := []string{
 		"A/B/C",
@@ -31,13 +28,13 @@ func main() {
 
 func testing(topics []string) {
 
-	runTest := func(topics []string, trueReport string, falseReport string, operation func(string, string) (bool, error)) {
+	runTest := func(topics []string, msgTrue string, msgFalse string, op func(string, string) (bool, error)) {
 		for _, str1 := range topics {
 			for _, str2 := range topics {
-				if result, _ := operation(str1, str2); result {
-					fmt.Printf(trueReport, str1, str2)
+				if result, _ := op(str1, str2); result {
+					fmt.Printf(msgTrue, str1, str2)
 				} else {
-					fmt.Printf((falseReport), str1, str2)
+					fmt.Printf((msgFalse), str1, str2)
 				}
 			}
 		}

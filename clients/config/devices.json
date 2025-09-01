@@ -332,6 +332,30 @@
 				"password1",
 				"password2"
 			]
+        },
+        {
+            "TOPIC": "inside/floor1/+/climate/thermostat/+/status",
+            "NUMBER": 2,
+            "DESCRIPTION": "Subscribes to all thermostat measurements on floor1",
+            "USERS": [
+                "user1",
+                "user2"
+            ],
+            "PASSWORDS": [
+                "password1",
+                "password2"
+            ]
+        },
+        {
+            "TOPIC": "inside/floor1/entryway/climate/thermostat/thermostat001/set",
+            "NUMBER": 1,
+            "DESCRIPTION": "Thermostat001 subscribes to the set topic to recieve commands",
+            "USERS": [
+                "thermostat001"
+            ],
+            "PASSWORDS": [
+                "thermostat001_password"
+            ]
         }
     ]
 }
