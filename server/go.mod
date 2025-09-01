@@ -1,4 +1,4 @@
-module github.com/MadScienceZone/mqtt-testbed/server
+module github.com/spencer1202/mqtt-testbed/server
 
 go 1.21.0
 
