@@ -19,6 +19,7 @@ package policy
 
 import (
 	"bytes"
+	"fmt"
 	"log"
 
 	"database/sql"
@@ -55,17 +56,20 @@ type PEAHook struct {
 // This is where we open a connection to the database.
 func (h PEAHook) Init(config any) error {
 	h.config.InitDefault()
-	db, err := sql.Open("mysql", h.config.Options.FormatDSN())
+	var err error
+	h.policy_db, err = sql.Open("mysql", h.config.Options.FormatDSN())
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to open connection to MySQL server: %v", err)
 	}
-	if err := db.Ping(); err != nil {
-		return err
+	if err = h.policy_db.Ping(); err != nil {
+		return fmt.Errorf("failed to ping MySQL server: %v", err)
 	}
-	h.policy_db = db
-
 	return nil
+}
 
+func (h PEAHook) Stop() error {
+	log.Println("disconnecting from MySQL server")
+	return h.policy_db.Close()
 }
 
 // ID identifies our hook to other interested subsystems.
