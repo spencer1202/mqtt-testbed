@@ -55,6 +55,7 @@ type PEAHook struct {
 // Called when the hook is created and attached by the broker.
 // This is where we open a connection to the database.
 func (h PEAHook) Init(config any) error {
+	h.config = new(Options)
 	h.config.InitDefault()
 	var err error
 	h.policy_db, err = sql.Open("mysql", h.config.Options.FormatDSN())
